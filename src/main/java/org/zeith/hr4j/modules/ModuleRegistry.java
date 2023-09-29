@@ -18,10 +18,12 @@ public class ModuleRegistry
 	
 	public static void bootstrap()
 	{
-		registerInput("hyperate", HypeRate.Specs::new);
-		registerInput("udp_app", UDPApp.Spec::new);
+		registerInput("hyperate", HypeRateInputModule.Specs::new);
+		registerInput("udp_app", UDPInputModule.Spec::new);
 		
-		registerOutput("websocket_server", WebSocketModule.Specs::new);
+		registerOutput("websocket_server", WebSocketOutputModule.Specs::new);
+		registerOutput("osc", OscOutputModule.Specs::new);
+		registerOutput("file", FileOutputModule.Spec::new);
 	}
 	
 	public static void registerInput(String id, Function<String, ModuleSpecs<? extends BaseInputModule>> specs)

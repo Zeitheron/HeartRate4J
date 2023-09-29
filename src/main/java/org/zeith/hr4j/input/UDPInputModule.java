@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
-public class UDPApp
+public class UDPInputModule
 		extends BaseInputModule
 {
 	protected final String prefix;
@@ -16,7 +16,7 @@ public class UDPApp
 	protected DatagramSocket socket;
 	protected Thread task;
 	
-	public UDPApp(String prefix, int port)
+	public UDPInputModule(String prefix, int port)
 	{
 		this.prefix = prefix;
 		this.port = port;
@@ -90,7 +90,7 @@ public class UDPApp
 	}
 	
 	public static class Spec
-			extends ModuleSpecs<UDPApp>
+			extends ModuleSpecs<UDPInputModule>
 	{
 		public Spec(String id)
 		{
@@ -98,13 +98,13 @@ public class UDPApp
 		}
 		
 		@Override
-		public Optional<UDPApp> create(JSONObject obj)
+		public Optional<UDPInputModule> create(JSONObject obj)
 		{
 			var prefix = obj.optString("prefix", "/209367920764903276/");
 			var port = obj.optInt("port", -1);
 			
 			return port > 0
-				   ? Optional.of(new UDPApp(prefix, port))
+				   ? Optional.of(new UDPInputModule(prefix, port))
 				   : Optional.empty();
 		}
 		

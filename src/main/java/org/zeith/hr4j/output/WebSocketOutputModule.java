@@ -10,7 +10,7 @@ import javax.websocket.Session;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class WebSocketModule
+public class WebSocketOutputModule
 		extends BaseOutputModule
 		implements IHealthListener
 {
@@ -20,7 +20,7 @@ public class WebSocketModule
 	
 	protected WebSocketServer wss;
 	
-	public WebSocketModule(String ip, int port, String format)
+	public WebSocketOutputModule(String ip, int port, String format)
 	{
 		this.ip = ip;
 		this.port = port;
@@ -57,13 +57,10 @@ public class WebSocketModule
 	{
 		if(info == null)
 			return;
-		
 		for(HealthInfo.Field update : HealthInfo.Field.values())
-		{
-			String msg = format
+			sender.accept(format
 					.replace("%event%", update.name().toLowerCase(Locale.ROOT))
-					.replace("%value%", update.get(info));
-		}
+					.replace("%value%", update.get(info)));
 	}
 	
 	@Override
@@ -93,7 +90,7 @@ public class WebSocketModule
 	}
 	
 	public static class Specs
-			extends ModuleSpecs<WebSocketModule>
+			extends ModuleSpecs<WebSocketOutputModule>
 	{
 		public Specs(String id)
 		{
@@ -101,14 +98,14 @@ public class WebSocketModule
 		}
 		
 		@Override
-		public Optional<WebSocketModule> create(JSONObject obj)
+		public Optional<WebSocketOutputModule> create(JSONObject obj)
 		{
 			String ip = obj.optString("ip");
 			int port = obj.getInt("port");
 			String format = obj.optString("format");
 			
 			return ip != null && !ip.isBlank() && port > 0 && format != null && !format.isBlank()
-				   ? Optional.of(new WebSocketModule(ip, port, format))
+				   ? Optional.of(new WebSocketOutputModule(ip, port, format))
 				   : Optional.empty();
 		}
 		
@@ -116,7 +113,7 @@ public class WebSocketModule
 		protected void populateDefaultConfig(JSONObject obj)
 		{
 			obj.put("ip", "127.0.0.1");
-			obj.put("port", 36367);
+			obj.put("port", 54675); // default Resonite port
 			obj.put("format", "%event%/%value%");
 		}
 	}

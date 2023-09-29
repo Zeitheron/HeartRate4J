@@ -15,7 +15,9 @@ import java.util.stream.Collectors;
 
 public class HeartRate4J
 {
-	private static final Path RUN_DIR;
+	public static final String VERSION = "1.0.1";
+	
+	public static final Path RUN_DIR;
 	
 	public static Callable<ModuleBridge> configuredBridge;
 	public static ModuleBridge bridge;
@@ -44,6 +46,10 @@ public class HeartRate4J
 		
 		obj.put("$valid_inputs", ModuleRegistry.dumpAllRegistered(ModuleRegistry.ModuleType.INPUT));
 		obj.put("$valid_outputs", ModuleRegistry.dumpAllRegistered(ModuleRegistry.ModuleType.OUTPUT));
+		
+		var arr = new JSONArray();
+		for(HealthInfo.Field value : HealthInfo.Field.values()) arr.put(value.getEventName());
+		obj.put("$valid_events", arr);
 		
 		return obj;
 	}
@@ -116,6 +122,7 @@ public class HeartRate4J
 	public static void main(String[] args)
 			throws IOException
 	{
+		System.out.println("Starting HeartRate4J v" + VERSION);
 		ModuleRegistry.bootstrap();
 		setupConfigs();
 		startBridge();

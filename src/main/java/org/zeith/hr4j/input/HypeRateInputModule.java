@@ -13,7 +13,7 @@ import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class HypeRate
+public class HypeRateInputModule
 		extends BaseInputModule
 {
 	private final HttpClient http;
@@ -34,7 +34,7 @@ public class HypeRate
 	
 	protected boolean supposedToClose;
 	
-	public HypeRate(String id)
+	public HypeRateInputModule(String id)
 			throws GeneralSecurityException
 	{
 		this.id = id;
@@ -218,7 +218,7 @@ public class HypeRate
 	}
 	
 	public static class Specs
-			extends ModuleSpecs<HypeRate>
+			extends ModuleSpecs<HypeRateInputModule>
 	{
 		public Specs(String id)
 		{
@@ -226,12 +226,12 @@ public class HypeRate
 		}
 		
 		@Override
-		public Optional<HypeRate> create(JSONObject obj)
+		public Optional<HypeRateInputModule> create(JSONObject obj)
 		{
 			String id = obj.optString("hyperate_user_id", null);
 			try
 			{
-				return id == null ? Optional.empty() : Optional.of(new HypeRate(id));
+				return id == null ? Optional.empty() : Optional.of(new HypeRateInputModule(id));
 			} catch(GeneralSecurityException e)
 			{
 				throw new RuntimeException(e);

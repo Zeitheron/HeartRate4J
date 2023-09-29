@@ -1,7 +1,7 @@
 package org.zeith.hr4j;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.*;
 
 public class HealthInfo
 {
@@ -29,18 +29,33 @@ public class HealthInfo
 	
 	public enum Field
 	{
-		BPM(i -> Double.toString(i.bpm));
+		BPM("bpm", i -> Double.toString(i.bpm), i -> (int) Math.round(i.bpm));
 		
+		private final String eventName;
 		private final Function<HealthInfo, String> toString;
+		private final ToIntFunction<HealthInfo> toByte;
 		
-		Field(Function<HealthInfo, String> toString)
+		Field(String eventName, Function<HealthInfo, String> toString, ToIntFunction<HealthInfo> toByte)
 		{
+			this.eventName = eventName;
 			this.toString = toString;
+			this.toByte = toByte;
 		}
 		
 		public String get(HealthInfo inf)
 		{
-			return toString.apply(inf);
+			String val = toString.apply(inf);
+			return val.replaceAll("[.]0+$", "");
+		}
+		
+		public byte getByte(HealthInfo inf)
+		{
+			return (byte) Math.max(0, Math.min(toByte.applyAsInt(inf), 255));
+		}
+		
+		public String getEventName()
+		{
+			return eventName;
 		}
 	}
 }

@@ -9,6 +9,10 @@ targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
+    maven {
+        name = "Zeitheron Maven"
+        url = "https://maven.zeith.org"
+    }
 }
 
 dependencies {
@@ -22,7 +26,7 @@ dependencies {
     implementation group: 'org.glassfish.tyrus', name: 'tyrus-server', version: '1.1'
     implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly', version: '1.1'
 
-    implementation 'com.illposed.osc:javaosc-core:0.8'
+    implementation 'com.illposed.osc:javaosc-core:0.7'
 }
 
 task shadedJar(type: Jar) {
