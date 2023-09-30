@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.*;
 import java.security.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -129,7 +130,7 @@ public class HypeRateInputModule
 										if(Objects.equals(evt.opt(0), "new-heartbeat"))
 										{
 											double bpm = evt.getJSONObject(1).getDouble("heartbeat");
-											getHealthInfo().updateBpm(bpm);
+											getHealthInfo().updateBpm(bpm, Instant.now());
 										}
 									}
 								}

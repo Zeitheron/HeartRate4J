@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.*;
 import java.security.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
@@ -97,7 +98,7 @@ public class PulsoidInputModule
 										if(dataObj.has("heartRate"))
 										{
 											double bpm = dataObj.getDouble("heartRate");
-											getHealthInfo().updateBpm(bpm);
+											getHealthInfo().updateBpm(bpm, Instant.ofEpochMilli(time));
 										}
 									}
 								}

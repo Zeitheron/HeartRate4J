@@ -10,12 +10,12 @@ public class ModuleBridge
 {
 	public final HealthInfo info = new HealthInfo();
 	
-	public final BaseInputModule input;
+	public final List<BaseInputModule> inputs;
 	public final List<BaseOutputModule> outputs;
 	
-	public ModuleBridge(BaseInputModule input, List<BaseOutputModule> outputs)
+	public ModuleBridge(List<BaseInputModule> inputs, List<BaseOutputModule> outputs)
 	{
-		this.input = input;
+		this.inputs = inputs;
 		this.outputs = List.copyOf(outputs);
 		
 		info.addListener(this);
@@ -24,8 +24,12 @@ public class ModuleBridge
 	public void start()
 			throws Exception
 	{
-		input.withHealthInfo(info);
-		input.start();
+		for(BaseInputModule input : inputs)
+		{
+			input.withHealthInfo(info);
+			input.start();
+		}
+		
 		for(BaseOutputModule output : outputs)
 		{
 			output.subscribe(info);
@@ -35,7 +39,11 @@ public class ModuleBridge
 	
 	public void stop()
 	{
-		input.stop();
+		for(BaseInputModule input : inputs)
+		{
+			input.stop();
+		}
+		
 		for(BaseOutputModule output : outputs)
 		{
 			output.stop();

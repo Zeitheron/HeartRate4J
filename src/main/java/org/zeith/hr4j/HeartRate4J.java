@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class HeartRate4J
 {
-	public static final String VERSION = "1.0.2";
+	public static final String VERSION = "1.1.0";
 	
 	public static final Path RUN_DIR;
 	
@@ -39,9 +39,11 @@ public class HeartRate4J
 	{
 		var obj = new JSONObject();
 		
-		obj.put("input", "Replace this string with object from array $valid_inputs");
+		obj.put("inputs", new JSONArray()
+				.put("Put one or more inputs with different options. Use $valid_inputs for reference")
+		);
 		obj.put("outputs", new JSONArray()
-				.put("Put as many outputs with different options as you want. Use $valid_outputs for refefence.")
+				.put("Put as many outputs with different options as you want. Use $valid_outputs for reference.")
 		);
 		
 		obj.put("$valid_inputs", ModuleRegistry.dumpAllRegistered(ModuleRegistry.ModuleType.INPUT));
@@ -63,21 +65,50 @@ public class HeartRate4J
 		var merged = createDefault();
 		if(Files.exists(cfgPath))
 			merged = JSONHelper.deepMerge(((JSONObject) new JSONTokener(Files.readString(cfgPath)).nextValue()), merged);
+		
+		if(merged.has("input")) // migrate!
+		{
+			merged.remove("inputs");
+			merged.put("inputs", new JSONArray()
+					.put(merged.get("input"))
+			);
+			merged.remove("input");
+		}
+		
 		if(!def.similar(merged) || !Files.exists(cfgPath))
 			Files.writeString(cfgPath, merged.toString(2));
 		
-		var inputRaw = merged.get("input");
+		var inputRaw = merged.opt("inputs");
 		var outputsRaw = merged.getJSONArray("outputs");
 		
 		configuredBridge = () ->
 		{
-			if(!(inputRaw instanceof JSONObject))
-				throw new JSONException("Input has not been set to a valid object.");
-			JSONObject inputObj = (JSONObject) inputRaw;
-			BaseInputModule in = ModuleRegistry.createInputModule(inputObj);
-			if(in == null)
-				throw new JSONException(
-						"Input module has not been " + (inputObj.optBoolean("enabled") ? "found" : "enabled"));
+			List<BaseInputModule> ins = new ArrayList<>();
+			
+			if(inputRaw instanceof JSONArray)
+			{
+				JSONArray ina = (JSONArray) inputRaw;
+				for(int i = 0; i < ina.length(); i++)
+				{
+					var o = ina.get(i);
+					if(!(o instanceof JSONObject)) continue;
+					var out = ModuleRegistry.createInputModule((JSONObject) o);
+					if(out == null) continue;
+					ins.add(out);
+				}
+			} else
+			{
+				if(!(inputRaw instanceof JSONObject))
+					throw new JSONException("Input has not been set to a valid object.");
+				JSONObject inputObj = (JSONObject) inputRaw;
+				
+				BaseInputModule in = ModuleRegistry.createInputModule(inputObj);
+				if(in == null)
+					throw new JSONException(
+							"Input module has not been " + (inputObj.optBoolean("enabled") ? "found" : "enabled"));
+				ins.add(in);
+			}
+			
 			List<BaseOutputModule> outs = new ArrayList<>();
 			for(int i = 0; i < outputsRaw.length(); i++)
 			{
@@ -88,11 +119,12 @@ public class HeartRate4J
 				outs.add(out);
 			}
 			
-			System.out.println("Input: " + in.getClass().getSimpleName());
+			System.out.println("Inputs: " + ins.stream().map(Object::getClass).map(Class::getSimpleName)
+					.collect(Collectors.joining(", ", "[", "]")));
 			System.out.println("Outputs: " + outs.stream().map(Object::getClass).map(Class::getSimpleName)
 					.collect(Collectors.joining(", ", "[", "]")));
 			
-			return new ModuleBridge(in, outs);
+			return new ModuleBridge(ins, outs);
 		};
 	}
 	

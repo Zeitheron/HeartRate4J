@@ -6,6 +6,7 @@ import org.zeith.hr4j.modules.ModuleSpecs;
 
 import java.io.IOException;
 import java.net.*;
+import java.time.Instant;
 import java.util.*;
 
 public class UDPInputModule
@@ -71,7 +72,7 @@ public class UDPInputModule
 					switch(dataArr[0].toLowerCase(Locale.ROOT))
 					{
 						case "bpm":
-							getHealthInfo().updateBpm(Double.parseDouble(dataArr[1]));
+							getHealthInfo().updateBpm(Double.parseDouble(dataArr[1]), Instant.now());
 							break;
 						default:
 							System.out.println("Unknown data point: " + dataArr[0]);

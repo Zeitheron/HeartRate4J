@@ -11,7 +11,7 @@ public interface IHealthListener
 		switch(update)
 		{
 			case BPM:
-				onBPMChange((Double) oldValue, info.bpm);
+				onBPMChange((Double) oldValue, info.bpm.getValue());
 				break;
 			default:
 				return;
