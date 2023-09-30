@@ -19,6 +19,7 @@ public class ModuleRegistry
 	public static void bootstrap()
 	{
 		registerInput("hyperate", HypeRateInputModule.Specs::new);
+		registerInput("pulsoid", PulsoidInputModule.Specs::new);
 		registerInput("udp_app", UDPInputModule.Spec::new);
 		
 		registerOutput("websocket_server", WebSocketOutputModule.Specs::new);

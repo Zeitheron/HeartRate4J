@@ -20,7 +20,8 @@ public class WebSocketServer
 	
 	public WebSocketStorage.Data getData()
 	{
-		return WebSocketStorage.DATA_MAP.get(getServerContainer());
+		var ctr = getServerContainer();
+		return ctr == null ? null : WebSocketStorage.DATA_MAP.get(ctr);
 	}
 	
 	@Override
